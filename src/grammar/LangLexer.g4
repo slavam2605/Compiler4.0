@@ -29,10 +29,11 @@ DOTDOTDOT:  '...';
 COMMA:      ',';
 
 KW_RETURN:  'return';
-KW_UINT32:  'uint32';
+KW_INT32:   'int32';
 
 ID:             [a-zA-Z_]+ [a-zA-Z0-9_]*;
 
+LITERAL_INT:    [0-9]+;
 
 WS:             [ \t\n\r]+ -> skip;
 COMMENT:        '/*' .*? '*/' -> skip;

@@ -15,22 +15,30 @@ options {
 }
 
 file
-    :   function*
+    :   (functions+=function)*
     ;
     
 function
-    :   type ID '(' (types+=type ids+=ID ({peek(1).getType() != RPAREN}?  ',')?)* ')' '{' statement* '}'
+    :   resultType=type funcName=ID '(' 
+            (paramTypes+=type paramNames+=ID ({peek(1).getType() != RPAREN}?  ',')?)* ')' '{' 
+                (statements+=statement)* 
+            '}'
     ;
     
-statement
-    :   'return' expression ';'
+statement locals [int mode] 
+    :   'return' e1=expression ';'       {$mode = 0;}
+    |   typeName=type varName=ID ';'     {$mode = 1;}
+    |   varName=ID '=' e1=expression ';' {$mode = 2;}
     ;
     
-expression
-    :   ID
-    |   expression ('*' | '/') expression
-    |   expression ('+' | '-') expression
+expression locals [int mode]
+    :   var=ID                                     {$mode = 0;}
+    |   intLit=LITERAL_INT                         {$mode = 1;} 
+    |   '(' e1=expression ')'                      {$mode = 2;}
+    |   '-' e1=expression                          {$mode = 3;}
+    |   e1=expression op=('*' | '/') e2=expression {$mode = 4;}
+    |   e1=expression op=('+' | '-') e2=expression {$mode = 5;}
     ;
     
 type
-    :   'uint32';
+    :   'int32';
